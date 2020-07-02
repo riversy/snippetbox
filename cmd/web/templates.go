@@ -1,19 +1,18 @@
 package main
 
 import (
+	"ecomgems.com/snippetbox/pkg/forms"
 	"ecomgems.com/snippetbox/pkg/models"
 	"html/template"
-	"net/url"
 	"path/filepath"
 	"time"
 )
 
 type templateData struct {
 	CurrentYear int
+	Form        *forms.Form
 	Snippet     *models.Snippet
 	Snippets    []*models.Snippet
-	FormErrors  map[string]string
-	FormData    url.Values
 }
 
 func humanDate(t time.Time) string {
