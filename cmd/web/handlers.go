@@ -118,9 +118,19 @@ func (app *application) signupUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.session.Put(r, "flash", "Your signup was successful. Please log in.")
+	user, err := app.users.GetByEmail(form.Get("email"))
+	if errors.Is(err, models.ErrNoRecord) || !user.Active {
+		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+		return
+	} else if err != nil {
+		app.serverError(w, err)
+		return
+	}
 
-	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+	app.session.Put(r, "flash", "Your signup was successful. Please log in.")
+	app.session.Put(r, "authenticatedUserID", user.ID)
+
+	http.Redirect(w, r, "/snippet/create", http.StatusSeeOther)
 }
 
 func (app *application) loginUserForm(w http.ResponseWriter, r *http.Request) {
